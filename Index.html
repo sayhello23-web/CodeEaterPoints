@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeEater - Redemption System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎟️ CodeEater Redemption System</h1>
+        
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">🔐 Login</button>
+            <button class="tab-btn" onclick="switchTab('signup')">📝 Sign Up</button>
+            <button class="tab-btn" onclick="switchTab('redeem')">🎟️ Redeem</button>
+            <button class="tab-btn" onclick="switchTab('wheel')">🎡 Spin Wheel</button>
+            <button class="tab-btn" onclick="switchTab('dashboard')">👤 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('admin')">🔧 Admin</button>
+        </div>
+
+        <div id="loginTab" class="tab-content active">
+            <h2>🔐 Login</h2>
+            <div class="form-card">
+                <input type="text" id="loginInput" placeholder="Phone Number or UID" class="input-field">
+                <button onclick="login()" class="btn-primary">Login</button>
+                <div id="loginMsg"></div>
+            </div>
+        </div>
+
+        <div id="signupTab" class="tab-content">
+            <h2>📝 Sign Up</h2>
+            <div class="form-card">
+                <input type="text" id="signupName" placeholder="Full Name" class="input-field">
+                <input type="tel" id="signupPhone" placeholder="Phone Number" class="input-field">
+                <input type="email" id="signupEmail" placeholder="Email" class="input-field">
+                <button onclick="signup()" class="btn-primary">Sign Up (+90 Welcome Points)</button>
+                <div id="signupMsg"></div>
+            </div>
+        </div>
+
+        <div id="redeemTab" class="tab-content">
+            <h2>🎟️ Redeem Code</h2>
+            <div class="form-card">
+                <input type="text" id="redeemCodeInput" placeholder="Enter code" class="input-field">
+                <button onclick="redeemCode()" class="btn-primary">Redeem</button>
+                <div id="redeemMsg"></div>
+            </div>
+            <div class="info-box">
+                <strong>Code Types:</strong><br>
+                • Number Only (9 digits): 1-40 points<br>
+                • Alpha+Number (11 chars): 10-200 points
+            </div>
+        </div>
+
+        <div id="wheelTab" class="tab-content">
+            <h2>🎡 Lucky Spin Wheel</h2>
+            <div class="wheel-container">
+                <canvas id="wheelCanvas" width="300" height="300"></canvas>
+                <button onclick="spinWheel()" class="btn-primary">🎡 SPIN (Cost: 360 Points)</button>
+                <div id="wheelResult" class="wheel-result"></div>
+            </div>
+        </div>
+
+        <div id="dashboardTab" class="tab-content">
+            <h2>👤 My Dashboard</h2>
+            <div class="stats-card">
+                <div class="stat-row"><span>👤 Name:</span><strong id="dashName">—</strong></div>
+                <div class="stat-row"><span>📱 Phone:</span><strong id="dashPhone">—</strong></div>
+                <div class="stat-row"><span>🆔 UID:</span><strong id="dashUID">—</strong></div>
+                <div class="stat-row"><span>💰 Points:</span><strong id="dashPoints">0</strong></div>
+                <div class="stat-row"><span>🪙 Red Coins:</span><strong id="dashRedCoins">0</strong></div>
+                <div class="stat-row"><span>💎 Coins:</span><strong id="dashCoins">0</strong></div>
+                <div class="stat-row"><span>🎫 Tokens:</span><strong id="dashTokens">0</strong></div>
+            </div>
+            <h3>🔄 Convert Currency</h3>
+            <div class="convert-grid">
+                <div class="convert-card"><p>1200 Points → 4 Red Coins</p><button onclick="convertP2RC()" class="btn-success">Convert</button></div>
+                <div class="convert-card"><p>22 Red Coins → 3 Coins</p><button onclick="convertRC2C()" class="btn-success">Convert</button></div>
+                <div class="convert-card"><p>15000 Points → 8 Coins</p><button onclick="convertP2C()" class="btn-success">Convert</button></div>
+                <div class="convert-card"><p>25 Coins → 1 Token</p><button onclick="convertC2T()" class="btn-success">Convert</button></div>
+            </div>
+            <button onclick="logout()" class="btn-danger">🚪 Logout</button>
+        </div>
+
+        <div id="adminTab" class="tab-content">
+            <h2>🔧 Admin Panel</h2>
+            <div id="adminLoginArea" class="admin-section">
+                <input type="password" id="adminPwd" placeholder="Admin Password" class="input-field">
+                <button onclick="adminLogin()" class="btn-primary">Login</button>
+                <div id="adminMsg"></div>
+            </div>
+            <div id="adminDashboard" style="display:none;">
+                <div class="admin-stats">
+                    <div class="stat-box"><h4>Total Users</h4><span id="totalUsers">0</span></div>
+                    <div class="stat-box"><h4>Active</h4><span id="activeUsers">0</span></div>
+                    <div class="stat-box"><h4>Deactivated</h4><span id="deactivatedUsers">0</span></div>
+                </div>
+                <div class="admin-section">
+                    <h3>📝 Generate Code</h3>
+                    <select id="codeType" class="input-field">
+                        <option value="number">Number (9 digits) 1-40 pts</option>
+                        <option value="alphanum">Alpha+Number (11 chars) 10-200 pts</option>
+                    </select>
+                    <input type="number" id="codePoints" placeholder="Points" class="input-field">
+                    <button onclick="generateCode()" class="btn-success">Generate</button>
+                    <div id="newCodeResult"></div>
+                </div>
+                <div class="admin-section">
+                    <h3>📋 All Codes</h3>
+                    <div id="allCodesList"></div>
+                </div>
+                <div class="admin-section">
+                    <h3>👑 Manage User</h3>
+                    <input type="text" id="targetUser" placeholder="UID or Phone" class="input-field">
+                    <select id="userAction" class="input-field">
+                        <option value="activate">Activate</option>
+                        <option value="deactivate">Deactivate</option>
+                        <option value="addPoints">Add Points</option>
+                        <option value="deductPoints">Deduct Points</option>
+                    </select>
+                    <input type="number" id="userAmount" placeholder="Amount" class="input-field">
+                    <button onclick="manageUser()" class="btn-warning">Execute</button>
+                </div>
+                <div class="admin-section">
+                    <h3>📊 All Users</h3>
+                    <div id="allUsersList"></div>
+                </div>
+                <button onclick="adminLogout()" class="btn-danger">Admin Logout</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+  </html>
